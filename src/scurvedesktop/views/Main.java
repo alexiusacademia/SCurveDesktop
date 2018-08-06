@@ -1,4 +1,4 @@
-package scurvedesktop.resources;
+package scurvedesktop.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -23,9 +23,22 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JTextField;
 import java.awt.Font;
 import javax.swing.JTable;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.SwingConstants;
+import javax.swing.ImageIcon;
+
+import javax.swing.JFileChooser;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Main extends JFrame {
 
@@ -35,6 +48,10 @@ public class Main extends JFrame {
 	private JTable tblActual;
 	private Object[][] projectedTableData;
 	private String[] projectedTableHeaders;
+	private JMenuBar menuBar;
+	private JMenu mnProject;
+	private JMenuItem mntmProjectedData;
+	private JMenuItem mntmActualData;
 
 	/**
 	 * Launch the application.
@@ -63,6 +80,75 @@ public class Main extends JFrame {
 	private void initViews() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
+		
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		mnProject = new JMenu("Project");
+		mnProject.setHorizontalAlignment(SwingConstants.TRAILING);
+		mnProject.setFont(new Font("Arial", Font.PLAIN, 12));
+		menuBar.add(mnProject);
+		
+		mntmProjectedData = new JMenuItem("Projected Data");
+		mntmProjectedData.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// Instance of JFileChooser
+				JFileChooser projectedFileChooser = new JFileChooser();
+				
+				// Set home as the current opened directory
+				projectedFileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+				
+				// Show the open file dialog
+				int projectedDataFileResult = projectedFileChooser.showOpenDialog(contentPane);
+				
+				// Check if the user selects a file or not
+				if (projectedDataFileResult == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = projectedFileChooser.getSelectedFile();
+					BufferedReader br = null;
+					String line = "";
+					List<SCurveNode> nodes = new ArrayList<>();
+					try {
+						br = new BufferedReader(
+								new InputStreamReader(
+										new FileInputStream(selectedFile.getAbsolutePath()), "UTF8")
+								);
+						
+						while ((line = br.readLine()) != null) {
+							String[] coordinate = line.split(",");
+							SCurveNode node = new SCurveNode(Double.parseDouble(coordinate[0].toString()), 
+									Double.parseDouble(coordinate[1].toString()));
+							nodes.add(node);
+							System.out.println(coordinate[0] + ", " + coordinate[1]);
+						}
+						scurveData.clear();
+						scurveData.addAll(nodes);
+						initializeScurveData();
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} finally {
+			            if (br != null) {
+			                try {
+			                    br.close();
+			                } catch (IOException e) {
+			                    e.printStackTrace();
+			                }
+			            }
+			        }
+				}
+			}
+		});
+		mnProject.add(mntmProjectedData);
+		mntmProjectedData.setIcon(new ImageIcon(Main.class.getResource("/scurvedesktop/resources/projected_icon.png")));
+		mntmProjectedData.setHorizontalAlignment(SwingConstants.LEFT);
+		mntmProjectedData.setFont(new Font("Arial", Font.PLAIN, 12));
+		
+		mntmActualData = new JMenuItem("Actual Data");
+		mntmActualData.setFont(new Font("Arial", Font.PLAIN, 12));
+		mntmActualData.setHorizontalAlignment(SwingConstants.LEFT);
+		mnProject.add(mntmActualData);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -94,7 +180,8 @@ public class Main extends JFrame {
 		gbc_lblScurve.gridy = 0;
 		contentPane.add(lblScurve, gbc_lblScurve);
 		
-		tblProjected = new JTable(projectedTableData, projectedTableHeaders);
+		// tblProjected = new JTable(projectedTableData, projectedTableHeaders);
+		tblProjected = new JTable();
 		GridBagConstraints gbc_tblProjected = new GridBagConstraints();
 		gbc_tblProjected.weightx = 1.0;
 		gbc_tblProjected.insets = new Insets(0, 0, 0, 5);
@@ -106,12 +193,11 @@ public class Main extends JFrame {
 		tblActual = new JTable();
 		GridBagConstraints gbc_tblActual = new GridBagConstraints();
 		gbc_tblActual.weightx = 1.0;
-		gbc_tblActual.anchor = GridBagConstraints.WEST;
 		gbc_tblActual.insets = new Insets(0, 0, 0, 5);
-		gbc_tblActual.fill = GridBagConstraints.VERTICAL;
+		gbc_tblActual.fill = GridBagConstraints.BOTH;
 		gbc_tblActual.gridx = 1;
 		gbc_tblActual.gridy = 1;
-		contentPane.add(tblActual, gbc_tblActual);
+		contentPane.add(new JScrollPane(tblActual), gbc_tblActual);
 		
 		DrawingPanel scurvePanel = new DrawingPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
@@ -147,7 +233,9 @@ public class Main extends JFrame {
 		projectedTableHeaders = new String[2];
 		projectedTableHeaders[0] = "Time";
 		projectedTableHeaders[1] = "Accomplishment";
-		
+	}
+	
+	private void initializeScurveData() {
 		// Set the data for the projected table
 		projectedTableData = new Object[scurveData.size()][2];
 		for (int i = 0; i < (scurveData.size()-1); i++) {
