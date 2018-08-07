@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import scurvedesktop.commons.SCurveNode;
 
@@ -52,6 +53,7 @@ public class Main extends JFrame {
 	private JMenu mnProject;
 	private JMenuItem mntmProjectedData;
 	private JMenuItem mntmActualData;
+	private DrawingPanel scurvePanel;
 
 	/**
 	 * Launch the application.
@@ -119,11 +121,23 @@ public class Main extends JFrame {
 							SCurveNode node = new SCurveNode(Double.parseDouble(coordinate[0].toString()), 
 									Double.parseDouble(coordinate[1].toString()));
 							nodes.add(node);
-							System.out.println(coordinate[0] + ", " + coordinate[1]);
 						}
+						// Clear the previous s-curve data
 						scurveData.clear();
+						
+						// Add the new data
 						scurveData.addAll(nodes);
+						
+						// Populate table for projected data
+						String[] headers = {"Time", "Percentage"};
+						DefaultTableModel model = new DefaultTableModel(headers, 0);
+						
+						
 						initializeScurveData();
+						
+						// Repaint the s-curve
+						scurvePanel.paint(scurvePanel.getGraphics());
+						
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -199,7 +213,7 @@ public class Main extends JFrame {
 		gbc_tblActual.gridy = 1;
 		contentPane.add(new JScrollPane(tblActual), gbc_tblActual);
 		
-		DrawingPanel scurvePanel = new DrawingPanel();
+		scurvePanel = new DrawingPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.gridheight = 2;
 		gbc_panel.weightx = 8.0;
