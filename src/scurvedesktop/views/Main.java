@@ -54,6 +54,8 @@ public class Main extends JFrame {
 	private JMenuItem mntmProjectedData;
 	private JMenuItem mntmActualData;
 	private DrawingPanel scurvePanel;
+	private JLabel lblProjected;
+	private JLabel lblActual;
 
 	/**
 	 * Launch the application.
@@ -132,8 +134,12 @@ public class Main extends JFrame {
 						String[] headers = {"Time", "Percentage"};
 						DefaultTableModel model = new DefaultTableModel(headers, 0);
 						
+						for (SCurveNode node : scurveData) {
+							Object[] o = {node.getAbscissa(), node.getOrdinate()};
+							model.addRow(o);
+						}
 						
-						initializeScurveData();
+						tblProjected.setModel(model);
 						
 						// Repaint the s-curve
 						scurvePanel.paint(scurvePanel.getGraphics());
@@ -171,9 +177,9 @@ public class Main extends JFrame {
 		
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[]{0, 0, 0, 0};
-		gbl_contentPane.rowHeights = new int[]{0, 0, 0};
+		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0};
 		gbl_contentPane.columnWeights = new double[]{1.0, 1.0, 1.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
 		
 		contentPane.setLayout(gbl_contentPane);
 		
@@ -194,23 +200,37 @@ public class Main extends JFrame {
 		gbc_lblScurve.gridy = 0;
 		contentPane.add(lblScurve, gbc_lblScurve);
 		
+		lblProjected = new JLabel("Projected");
+		GridBagConstraints gbc_lblProjected = new GridBagConstraints();
+		gbc_lblProjected.insets = new Insets(0, 0, 5, 5);
+		gbc_lblProjected.gridx = 0;
+		gbc_lblProjected.gridy = 1;
+		contentPane.add(lblProjected, gbc_lblProjected);
+		
+		lblActual = new JLabel("Actual");
+		GridBagConstraints gbc_lblActual = new GridBagConstraints();
+		gbc_lblActual.insets = new Insets(0, 0, 5, 5);
+		gbc_lblActual.gridx = 1;
+		gbc_lblActual.gridy = 1;
+		contentPane.add(lblActual, gbc_lblActual);
+		
 		// tblProjected = new JTable(projectedTableData, projectedTableHeaders);
 		tblProjected = new JTable();
 		GridBagConstraints gbc_tblProjected = new GridBagConstraints();
-		gbc_tblProjected.weightx = 1.0;
+		gbc_tblProjected.weightx = 2.0;
 		gbc_tblProjected.insets = new Insets(0, 0, 0, 5);
 		gbc_tblProjected.fill = GridBagConstraints.BOTH;
 		gbc_tblProjected.gridx = 0;
-		gbc_tblProjected.gridy = 1;
+		gbc_tblProjected.gridy = 2;
 		contentPane.add(new JScrollPane(tblProjected), gbc_tblProjected);
 		
 		tblActual = new JTable();
 		GridBagConstraints gbc_tblActual = new GridBagConstraints();
-		gbc_tblActual.weightx = 1.0;
+		gbc_tblActual.weightx = 2.0;
 		gbc_tblActual.insets = new Insets(0, 0, 0, 5);
 		gbc_tblActual.fill = GridBagConstraints.BOTH;
 		gbc_tblActual.gridx = 1;
-		gbc_tblActual.gridy = 1;
+		gbc_tblActual.gridy = 2;
 		contentPane.add(new JScrollPane(tblActual), gbc_tblActual);
 		
 		scurvePanel = new DrawingPanel();
@@ -247,15 +267,6 @@ public class Main extends JFrame {
 		projectedTableHeaders = new String[2];
 		projectedTableHeaders[0] = "Time";
 		projectedTableHeaders[1] = "Accomplishment";
-	}
-	
-	private void initializeScurveData() {
-		// Set the data for the projected table
-		projectedTableData = new Object[scurveData.size()][2];
-		for (int i = 0; i < (scurveData.size()-1); i++) {
-			projectedTableData[i][0] = scurveData.get(i).getAbscissa();
-			projectedTableData[i][1] = scurveData.get(i).getOrdinate();
-		}
 	}
 	
 	private class DrawingPanel extends JPanel{
