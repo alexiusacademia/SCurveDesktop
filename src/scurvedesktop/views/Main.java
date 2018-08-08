@@ -29,6 +29,7 @@ import javax.swing.JTable;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
 
@@ -40,14 +41,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.awt.Toolkit;
+import java.awt.Window.Type;
 
 public class Main extends JFrame {
 
 	private JPanel contentPane;
-	private List<SCurveNode> scurveData;
+	private List<SCurveNode> scurveDataProjected;
+	private List<SCurveNode> scurveDataActual;
 	private JTable tblProjected;
 	private JTable tblActual;
-	private Object[][] projectedTableData;
 	private String[] projectedTableHeaders;
 	private JMenuBar menuBar;
 	private JMenu mnProject;
@@ -82,8 +85,11 @@ public class Main extends JFrame {
 	}
 
 	private void initViews() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/scurvedesktop/resources/icon.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 640, 320);
+		
+		this.setTitle("SCurve Desktop");
 		
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -98,17 +104,17 @@ public class Main extends JFrame {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				// Instance of JFileChooser
-				JFileChooser projectedFileChooser = new JFileChooser();
+				JFileChooser fileChooserProjected = new JFileChooser();
 				
 				// Set home as the current opened directory
-				projectedFileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+				fileChooserProjected.setCurrentDirectory(new File(System.getProperty("user.home")));
 				
 				// Show the open file dialog
-				int projectedDataFileResult = projectedFileChooser.showOpenDialog(contentPane);
+				int dataFileResultProjected = fileChooserProjected.showOpenDialog(contentPane);
 				
 				// Check if the user selects a file or not
-				if (projectedDataFileResult == JFileChooser.APPROVE_OPTION) {
-					File selectedFile = projectedFileChooser.getSelectedFile();
+				if (dataFileResultProjected == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = fileChooserProjected.getSelectedFile();
 					BufferedReader br = null;
 					String line = "";
 					List<SCurveNode> nodes = new ArrayList<>();
@@ -125,16 +131,16 @@ public class Main extends JFrame {
 							nodes.add(node);
 						}
 						// Clear the previous s-curve data
-						scurveData.clear();
+						scurveDataProjected.clear();
 						
 						// Add the new data
-						scurveData.addAll(nodes);
+						scurveDataProjected.addAll(nodes);
 						
 						// Populate table for projected data
 						String[] headers = {"Time", "Percentage"};
 						DefaultTableModel model = new DefaultTableModel(headers, 0);
 						
-						for (SCurveNode node : scurveData) {
+						for (SCurveNode node : scurveDataProjected) {
 							Object[] o = {node.getAbscissa(), node.getOrdinate()};
 							model.addRow(o);
 						}
@@ -166,6 +172,80 @@ public class Main extends JFrame {
 		mntmProjectedData.setFont(new Font("Arial", Font.PLAIN, 12));
 		
 		mntmActualData = new JMenuItem("Actual Data");
+		mntmActualData.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// Check if data for the projected s-curve is more than 2 nodes
+				if (scurveDataProjected.size() <= 2) {
+					System.out.println("Projected data must first be set and must contain more than 2 nodes.");
+					JOptionPane.showMessageDialog(contentPane, "Projected data must be set first and must contain more than 2 nodes.", 
+							"Forbidden Action", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					// Instance of JFileChooser
+					JFileChooser fileChooserActual = new JFileChooser();
+					
+					// Set home as the current opened directory
+					fileChooserActual.setCurrentDirectory(new File(System.getProperty("user.home")));
+					
+					// Show the open file dialog
+					int dataFileResultActual = fileChooserActual.showOpenDialog(contentPane);
+					
+					// Check if the user selects a file or not
+					if (dataFileResultActual == JFileChooser.APPROVE_OPTION) {
+						File selectedFile = fileChooserActual.getSelectedFile();
+						BufferedReader br = null;
+						String line = "";
+						List<SCurveNode> nodes = new ArrayList<>();
+						try {
+							br = new BufferedReader(
+									new InputStreamReader(
+											new FileInputStream(selectedFile.getAbsolutePath()), "UTF8")
+									);
+							
+							while ((line = br.readLine()) != null) {
+								String[] coordinate = line.split(",");
+								SCurveNode node = new SCurveNode(Double.parseDouble(coordinate[0].toString()), 
+										Double.parseDouble(coordinate[1].toString()));
+								nodes.add(node);
+							}
+							// Clear the previous s-curve data
+							scurveDataActual.clear();
+							
+							// Add the new data
+							scurveDataActual.addAll(nodes);
+							
+							// Populate table for projected data
+							String[] headers = {"Time", "Percentage"};
+							DefaultTableModel model = new DefaultTableModel(headers, 0);
+							
+							for (SCurveNode node : scurveDataActual) {
+								Object[] o = {node.getAbscissa(), node.getOrdinate()};
+								model.addRow(o);
+							}
+							
+							tblActual.setModel(model);
+							
+							// Repaint the s-curve
+							scurvePanel.paint(scurvePanel.getGraphics());
+							
+						} catch (FileNotFoundException e1) {
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						} finally {
+				            if (br != null) {
+				                try {
+				                    br.close();
+				                } catch (IOException e1) {
+				                    e1.printStackTrace();
+				                }
+				            }
+				        }
+					}
+				}
+				
+			}
+		});
 		mntmActualData.setFont(new Font("Arial", Font.PLAIN, 12));
 		mntmActualData.setHorizontalAlignment(SwingConstants.LEFT);
 		mnProject.add(mntmActualData);
@@ -254,19 +334,16 @@ public class Main extends JFrame {
 	}
 
 	private void initObjects() {
-		scurveData = new ArrayList<>();
+		scurveDataProjected = new ArrayList<>();
+		scurveDataActual = new ArrayList<>();
 		
-		// Add data
-		scurveData.add(new SCurveNode(0,0));
-		scurveData.add(new SCurveNode(30,15));
-		scurveData.add(new SCurveNode(60,45));
-		scurveData.add(new SCurveNode(90,85));
-		scurveData.add(new SCurveNode(120,100));
+		// Add initial data for projected
+		scurveDataProjected.add(new SCurveNode(0,0));
+		scurveDataProjected.add(new SCurveNode(0, 0));
 		
-		// Set the titles for the projected table
-		projectedTableHeaders = new String[2];
-		projectedTableHeaders[0] = "Time";
-		projectedTableHeaders[1] = "Accomplishment";
+		// Add initial data for actual
+		scurveDataActual.add(new SCurveNode(0, 0));
+		scurveDataActual.add(new SCurveNode(0, 0));
 	}
 	
 	private class DrawingPanel extends JPanel{
@@ -279,12 +356,15 @@ public class Main extends JFrame {
 			Graphics2D g2D = (Graphics2D)g;
 			double scurveActualHeight, scurveActualWidth;
 			
-			scurveActualHeight = Math.abs(scurveData.get(0).getOrdinate() - scurveData.get(scurveData.size()-1).getOrdinate());
-			scurveActualWidth = Math.abs(scurveData.get(0).getAbscissa() - scurveData.get(scurveData.size()-1).getAbscissa());
+			// Get the height and width based on the data of projected timeline
+			scurveActualHeight = Math.abs(scurveDataProjected.get(0).getOrdinate() - scurveDataProjected.get(scurveDataProjected.size()-1).getOrdinate());
+			scurveActualWidth = Math.abs(scurveDataProjected.get(0).getAbscissa() - scurveDataProjected.get(scurveDataProjected.size()-1).getAbscissa());
 			
+			// Get the widget's actual width and height
 			double panelHeight = this.getHeight();
 			double panelWidth = this.getWidth();
 			
+			// Create factors for adjusting data to the widget's scurve panel
 			double factorHeight = panelHeight / scurveActualHeight;
 			double factorWidth = panelWidth / scurveActualWidth;
 			
@@ -293,22 +373,23 @@ public class Main extends JFrame {
 			g2D.fillRect(0,  0, (int)panelWidth, (int)panelHeight);
 			
 			// Draw initial vertical and horizontal grid lines
-			g2D.setColor(Color.GRAY);
+			g2D.setColor(Color.LIGHT_GRAY);
 			g2D.drawLine(0, 0, 0, (int)panelHeight);
 			g2D.drawLine(0, (int)panelHeight, (int)panelWidth, (int)panelHeight);
 			
+			// Draw the s-curve (projected)
 			int x1, x2, y1, y2;
-			for (int i = 1; i < scurveData.size(); i++) {
-				x1 = (int) (scurveData.get(i-1).getAbscissa() * factorWidth);
-				x2 = (int) (scurveData.get(i).getAbscissa() * factorWidth);
-				y1 = (int) (panelHeight - scurveData.get(i-1).getOrdinate() * factorHeight);
-				y2 = (int) (panelHeight - scurveData.get(i).getOrdinate() * factorHeight);
+			for (int i = 1; i < scurveDataProjected.size(); i++) {
+				x1 = (int) (scurveDataProjected.get(i-1).getAbscissa() * factorWidth);
+				x2 = (int) (scurveDataProjected.get(i).getAbscissa() * factorWidth);
+				y1 = (int) (panelHeight - scurveDataProjected.get(i-1).getOrdinate() * factorHeight);
+				y2 = (int) (panelHeight - scurveDataProjected.get(i).getOrdinate() * factorHeight);
 				
 				// Sets the stroke
 				g2D.setColor(Color.RED);
 				g2D.setStroke(new BasicStroke(3));
 				
-				// Draw the curve line
+				// Draw the curve segment
 				g2D.drawLine(x1, y1, x2, y2);
 				
 				// Set the stroke
@@ -316,8 +397,22 @@ public class Main extends JFrame {
 				g2D.setStroke(new BasicStroke(1));
 				
 				// Draw vertical and horizontal grid
-				g2D.drawLine(0, y2, (int)panelWidth, y2);
+				// g2D.drawLine(0, y2, (int)panelWidth, y2);
 				g2D.drawLine(x2, 0, x2, (int)panelHeight);
+			}
+			
+			for (int i = 1; i < scurveDataActual.size(); i++) {
+				x1 = (int) (scurveDataActual.get(i-1).getAbscissa() * factorWidth);
+				x2 = (int) (scurveDataActual.get(i).getAbscissa() * factorWidth);
+				y1 = (int) (panelHeight - scurveDataActual.get(i-1).getOrdinate() * factorHeight);
+				y2 = (int) (panelHeight - scurveDataActual.get(i).getOrdinate() * factorHeight);
+				
+				// Sets the stroke
+				g2D.setColor(Color.BLUE);
+				g2D.setStroke(new BasicStroke(3));
+				
+				// Draw the curve segment
+				g2D.drawLine(x1, y1, x2, y2);
 			}
 		}
 	}
