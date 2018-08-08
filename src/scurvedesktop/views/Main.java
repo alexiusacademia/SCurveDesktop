@@ -43,6 +43,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.awt.Toolkit;
 import java.awt.Window.Type;
+import java.awt.Component;
+import javax.swing.Box;
+import java.awt.Dimension;
 
 public class Main extends JFrame {
 
@@ -59,6 +62,7 @@ public class Main extends JFrame {
 	private DrawingPanel scurvePanel;
 	private JLabel lblProjected;
 	private JLabel lblActual;
+	private Component rigidArea;
 
 	/**
 	 * Launch the application.
@@ -257,9 +261,9 @@ public class Main extends JFrame {
 		
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[]{0, 0, 0, 0};
-		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0};
+		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0, 0};
 		gbl_contentPane.columnWeights = new double[]{1.0, 1.0, 1.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		
 		contentPane.setLayout(gbl_contentPane);
 		
@@ -298,7 +302,7 @@ public class Main extends JFrame {
 		tblProjected = new JTable();
 		GridBagConstraints gbc_tblProjected = new GridBagConstraints();
 		gbc_tblProjected.weightx = 2.0;
-		gbc_tblProjected.insets = new Insets(0, 0, 0, 5);
+		gbc_tblProjected.insets = new Insets(0, 0, 5, 5);
 		gbc_tblProjected.fill = GridBagConstraints.BOTH;
 		gbc_tblProjected.gridx = 0;
 		gbc_tblProjected.gridy = 2;
@@ -307,20 +311,27 @@ public class Main extends JFrame {
 		tblActual = new JTable();
 		GridBagConstraints gbc_tblActual = new GridBagConstraints();
 		gbc_tblActual.weightx = 2.0;
-		gbc_tblActual.insets = new Insets(0, 0, 0, 5);
+		gbc_tblActual.insets = new Insets(0, 0, 5, 5);
 		gbc_tblActual.fill = GridBagConstraints.BOTH;
 		gbc_tblActual.gridx = 1;
 		gbc_tblActual.gridy = 2;
 		contentPane.add(new JScrollPane(tblActual), gbc_tblActual);
 		
 		scurvePanel = new DrawingPanel();
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.gridheight = 2;
-		gbc_panel.weightx = 8.0;
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.gridx = 2;
-		gbc_panel.gridy = 1;
-		contentPane.add(scurvePanel, gbc_panel);
+		GridBagConstraints gbc_pnlSCurveLabelHorizontal = new GridBagConstraints();
+		gbc_pnlSCurveLabelHorizontal.gridheight = 2;
+		gbc_pnlSCurveLabelHorizontal.weightx = 8.0;
+		gbc_pnlSCurveLabelHorizontal.fill = GridBagConstraints.BOTH;
+		gbc_pnlSCurveLabelHorizontal.gridx = 2;
+		gbc_pnlSCurveLabelHorizontal.gridy = 1;
+		contentPane.add(scurvePanel, gbc_pnlSCurveLabelHorizontal);
+		
+		rigidArea = Box.createRigidArea(new Dimension(20, 20));
+		GridBagConstraints gbc_rigidArea = new GridBagConstraints();
+		gbc_rigidArea.fill = GridBagConstraints.BOTH;
+		gbc_rigidArea.gridx = 2;
+		gbc_rigidArea.gridy = 3;
+		contentPane.add(rigidArea, gbc_rigidArea);
 		scurvePanel.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -357,8 +368,10 @@ public class Main extends JFrame {
 			double scurveActualHeight, scurveActualWidth;
 			
 			// Get the height and width based on the data of projected timeline
-			scurveActualHeight = Math.abs(scurveDataProjected.get(0).getOrdinate() - scurveDataProjected.get(scurveDataProjected.size()-1).getOrdinate());
-			scurveActualWidth = Math.abs(scurveDataProjected.get(0).getAbscissa() - scurveDataProjected.get(scurveDataProjected.size()-1).getAbscissa());
+			scurveActualHeight = Math.abs(scurveDataProjected.get(0).getOrdinate() - 
+					scurveDataProjected.get(scurveDataProjected.size()-1).getOrdinate()) + g2D.getFont().getSize();
+			scurveActualWidth = Math.abs(scurveDataProjected.get(0).getAbscissa() - 
+					scurveDataProjected.get(scurveDataProjected.size()-1).getAbscissa()) + 20;
 			
 			// Get the widget's actual width and height
 			double panelHeight = this.getHeight();
@@ -382,8 +395,8 @@ public class Main extends JFrame {
 			for (int i = 1; i < scurveDataProjected.size(); i++) {
 				x1 = (int) (scurveDataProjected.get(i-1).getAbscissa() * factorWidth);
 				x2 = (int) (scurveDataProjected.get(i).getAbscissa() * factorWidth);
-				y1 = (int) (panelHeight - scurveDataProjected.get(i-1).getOrdinate() * factorHeight);
-				y2 = (int) (panelHeight - scurveDataProjected.get(i).getOrdinate() * factorHeight);
+				y1 = (int) (panelHeight - scurveDataProjected.get(i-1).getOrdinate() * factorHeight - g2D.getFont().getSize() * factorHeight);
+				y2 = (int) (panelHeight - scurveDataProjected.get(i).getOrdinate() * factorHeight - g2D.getFont().getSize() * factorHeight);
 				
 				// Sets the stroke
 				g2D.setColor(Color.RED);
@@ -396,16 +409,20 @@ public class Main extends JFrame {
 				g2D.setColor(Color.gray);
 				g2D.setStroke(new BasicStroke(1));
 				
+				// Draw label for horizontal
+				g2D.drawString(Double.toString(scurveDataProjected.get(i).getAbscissa()), (int)x2, (int)panelHeight);
+				
 				// Draw vertical and horizontal grid
 				// g2D.drawLine(0, y2, (int)panelWidth, y2);
 				g2D.drawLine(x2, 0, x2, (int)panelHeight);
 			}
 			
+			// Draw the s-curve (actual)
 			for (int i = 1; i < scurveDataActual.size(); i++) {
 				x1 = (int) (scurveDataActual.get(i-1).getAbscissa() * factorWidth);
 				x2 = (int) (scurveDataActual.get(i).getAbscissa() * factorWidth);
-				y1 = (int) (panelHeight - scurveDataActual.get(i-1).getOrdinate() * factorHeight);
-				y2 = (int) (panelHeight - scurveDataActual.get(i).getOrdinate() * factorHeight);
+				y1 = (int) (panelHeight - scurveDataActual.get(i-1).getOrdinate() * factorHeight - g2D.getFont().getSize() * factorHeight);
+				y2 = (int) (panelHeight - scurveDataActual.get(i).getOrdinate() * factorHeight - g2D.getFont().getSize() * factorHeight);
 				
 				// Sets the stroke
 				g2D.setColor(Color.BLUE);
