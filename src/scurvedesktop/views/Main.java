@@ -20,7 +20,6 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +41,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.awt.Toolkit;
-import java.awt.Window.Type;
 import java.awt.Component;
 import javax.swing.Box;
 import java.awt.Dimension;
@@ -54,7 +52,6 @@ public class Main extends JFrame {
 	private List<SCurveNode> scurveDataActual;
 	private JTable tblProjected;
 	private JTable tblActual;
-	private String[] projectedTableHeaders;
 	private JMenuBar menuBar;
 	private JMenu mnProject;
 	private JMenuItem mntmProjectedData;
