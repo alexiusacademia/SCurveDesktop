@@ -45,6 +45,7 @@ import java.awt.Component;
 import javax.swing.Box;
 import java.awt.Dimension;
 
+@SuppressWarnings("serial")
 public class Main extends JFrame {
 
 	private JPanel contentPane;
@@ -384,7 +385,8 @@ public class Main extends JFrame {
 			
 			// Draw initial vertical and horizontal grid lines
 			g2D.setColor(Color.LIGHT_GRAY);
-			g2D.drawLine(0, 0, 0, (int)panelHeight);
+			g2D.drawLine(0, (int) (panelHeight - g2D.getFont().getSize() * factorHeight), (int)(panelWidth - 20*factorWidth), 
+					(int) (panelHeight - g2D.getFont().getSize() * factorHeight));
 			g2D.drawLine(0, (int)panelHeight, (int)panelWidth, (int)panelHeight);
 			
 			// Draw the s-curve (projected)
@@ -408,6 +410,16 @@ public class Main extends JFrame {
 				
 				// Draw label for horizontal
 				g2D.drawString(Double.toString(scurveDataProjected.get(i).getAbscissa()), (int)x2, (int)panelHeight);
+				if (i == 1) {
+					g2D.drawString(Double.toString(scurveDataProjected.get(i - 1).getAbscissa()), 
+							(int)(scurveDataProjected.get(i-1).getAbscissa() * factorWidth), 
+							(int)panelHeight);
+				}
+				
+				// Draw label for vertical
+				g2D.drawString(Double.toString(scurveDataProjected.get(i).getOrdinate()), 
+						(int)(panelWidth - 20*factorWidth), 
+						(int)(y2 + g2D.getFont().getSize()));
 				
 				// Draw vertical and horizontal grid
 				// g2D.drawLine(0, y2, (int)panelWidth, y2);
