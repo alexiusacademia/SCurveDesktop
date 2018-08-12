@@ -486,7 +486,7 @@ public class Main extends JFrame {
 			if (time <= scurveDataActual.get(scurveDataActual.size()-1).getAbscissa()) {
 				double actual = Math.round(scurveActual.getOrdinate(time) * 1000.0) / 1000.0;
 				double slippage = Math.round((actual - percent) * 1000.0) / 1000.0;
-				double percentSlippage = Math.round(((actual - percent) / percent) * 1000.0) / 1000.0;
+				double percentSlippage = Math.round(((actual - percent) / percent) * 1000.0 * 100) / 1000.0;
 				
 				lblActual.setText(String.valueOf(actual));
 				lblSlippage.setText(String.valueOf(slippage));
