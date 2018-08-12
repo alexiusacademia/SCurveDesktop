@@ -59,13 +59,19 @@ public class Main extends JFrame {
 	private JMenuItem mntmProjectedData;
 	private JMenuItem mntmActualData;
 	private DrawingPanel scurvePanel;
-	private JLabel lblProjected;
-	private JLabel lblActual;
+	private JLabel lblProjectedTitle;
+	private JLabel lblActualTitle;
 	private JLabel lblTime;
 	private JLabel lblProjected_1;
 	private JTextField tfTime;
 	private JTextField tfProjected;
 	private SCurve scurveProjected, scurveActual;
+	private JLabel lblNewLabel;
+	private JLabel lblSlippageLabel;
+	private JLabel lblNewLabel_1;
+	private JLabel lblActual;
+	private JLabel lblSlippage;
+	private JLabel lblPercentSlippage;
 
 	/**
 	 * Launch the application.
@@ -264,9 +270,9 @@ public class Main extends JFrame {
 		
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[]{0, 0, 0, 0};
-		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0, 0, 0};
+		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_contentPane.columnWeights = new double[]{1.0, 1.0, 1.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		
 		contentPane.setLayout(gbl_contentPane);
 		
@@ -287,19 +293,19 @@ public class Main extends JFrame {
 		gbc_lblScurve.gridy = 0;
 		contentPane.add(lblScurve, gbc_lblScurve);
 		
-		lblProjected = new JLabel("Projected");
-		GridBagConstraints gbc_lblProjected = new GridBagConstraints();
-		gbc_lblProjected.insets = new Insets(0, 0, 5, 5);
-		gbc_lblProjected.gridx = 0;
-		gbc_lblProjected.gridy = 1;
-		contentPane.add(lblProjected, gbc_lblProjected);
+		lblProjectedTitle = new JLabel("Projected");
+		GridBagConstraints gbc_lblProjectedTitle = new GridBagConstraints();
+		gbc_lblProjectedTitle.insets = new Insets(0, 0, 5, 5);
+		gbc_lblProjectedTitle.gridx = 0;
+		gbc_lblProjectedTitle.gridy = 1;
+		contentPane.add(lblProjectedTitle, gbc_lblProjectedTitle);
 		
-		lblActual = new JLabel("Actual");
-		GridBagConstraints gbc_lblActual = new GridBagConstraints();
-		gbc_lblActual.insets = new Insets(0, 0, 5, 5);
-		gbc_lblActual.gridx = 1;
-		gbc_lblActual.gridy = 1;
-		contentPane.add(lblActual, gbc_lblActual);
+		lblActualTitle = new JLabel("Actual");
+		GridBagConstraints gbc_lblActualTitle = new GridBagConstraints();
+		gbc_lblActualTitle.insets = new Insets(0, 0, 5, 5);
+		gbc_lblActualTitle.gridx = 1;
+		gbc_lblActualTitle.gridy = 1;
+		contentPane.add(lblActualTitle, gbc_lblActualTitle);
 		
 		// tblProjected = new JTable(projectedTableData, projectedTableHeaders);
 		tblProjected = new JTable();
@@ -349,20 +355,28 @@ public class Main extends JFrame {
 			public void keyReleased(KeyEvent e) {
 				// Action when time is entered
 				try {
-					Double.parseDouble(tfTime.getText());
-					updateProjectedNodes();
-					double percent = scurveProjected.getOrdinate(Double.parseDouble(tfTime.getText()));
-					percent = Math.round(percent * 100) / 100;
-					tfProjected.setText(String.valueOf(percent));
+					double time = Double.parseDouble(tfTime.getText());
+					// Check if time is on the range provided
+					if (time >= scurveDataProjected.get(0).getAbscissa() && 
+							time <= scurveDataProjected.get(scurveDataProjected.size()-1).getAbscissa()) {
+						updateProjectedNodes();
+						double percent = scurveProjected.getOrdinate(time);
+						percent = Math.round(percent * 1000.0) / 1000.0;
+						tfProjected.setText(String.valueOf(percent));
+						showStatus(time, percent);
+					} else {
+						tfProjected.setText("Out of range!");
+					}
+					
 				} catch (NullPointerException e1) {
-					e1.printStackTrace();
+					System.out.println(e1.getMessage());
 				} catch (NumberFormatException e1) {
-					e1.printStackTrace();
+					System.out.println(e1.getMessage());
 				}
 			}
 		});
 		GridBagConstraints gbc_tfTime = new GridBagConstraints();
-		gbc_tfTime.insets = new Insets(0, 0, 0, 5);
+		gbc_tfTime.insets = new Insets(0, 0, 5, 5);
 		gbc_tfTime.fill = GridBagConstraints.HORIZONTAL;
 		gbc_tfTime.gridx = 0;
 		gbc_tfTime.gridy = 4;
@@ -374,16 +388,80 @@ public class Main extends JFrame {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				// Action when projected percentage is entered
-				
+				try {
+					double percent = Double.parseDouble(tfProjected.getText());
+					if (percent >= scurveDataProjected.get(0).getOrdinate() &&
+							percent <= scurveDataProjected.get(scurveDataProjected.size()-1).getOrdinate()) {
+						updateProjectedNodes();
+						double time = scurveProjected.getAbscissa(percent);
+						time = Math.round(time * 1000.0) / 1000.0;
+						tfTime.setText(String.valueOf(time));
+						showStatus(time, percent);
+					} else {
+						tfTime.setText("Out of range!");
+					}
+				} catch (NullPointerException e1) {
+					System.out.println(e1.getMessage());
+				} catch (NumberFormatException e1) {
+					System.out.println(e1.getMessage());
+				}
 			}
 		});
 		GridBagConstraints gbc_tfProjected = new GridBagConstraints();
-		gbc_tfProjected.insets = new Insets(0, 0, 0, 5);
+		gbc_tfProjected.insets = new Insets(0, 0, 5, 5);
 		gbc_tfProjected.fill = GridBagConstraints.HORIZONTAL;
 		gbc_tfProjected.gridx = 1;
 		gbc_tfProjected.gridy = 4;
 		contentPane.add(tfProjected, gbc_tfProjected);
 		tfProjected.setColumns(10);
+		
+		lblNewLabel = new JLabel("Actual");
+		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel.gridx = 0;
+		gbc_lblNewLabel.gridy = 5;
+		contentPane.add(lblNewLabel, gbc_lblNewLabel);
+		
+		lblActual = new JLabel("");
+		GridBagConstraints gbc_lblActual = new GridBagConstraints();
+		gbc_lblActual.anchor = GridBagConstraints.WEST;
+		gbc_lblActual.insets = new Insets(0, 0, 5, 5);
+		gbc_lblActual.gridx = 1;
+		gbc_lblActual.gridy = 5;
+		contentPane.add(lblActual, gbc_lblActual);
+		
+		lblSlippageLabel = new JLabel("Slippage");
+		GridBagConstraints gbc_lblSlippageLabel = new GridBagConstraints();
+		gbc_lblSlippageLabel.anchor = GridBagConstraints.EAST;
+		gbc_lblSlippageLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSlippageLabel.gridx = 0;
+		gbc_lblSlippageLabel.gridy = 6;
+		contentPane.add(lblSlippageLabel, gbc_lblSlippageLabel);
+		
+		lblSlippage = new JLabel("");
+		GridBagConstraints gbc_lblSlippage = new GridBagConstraints();
+		gbc_lblSlippage.anchor = GridBagConstraints.WEST;
+		gbc_lblSlippage.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSlippage.gridx = 1;
+		gbc_lblSlippage.gridy = 6;
+		contentPane.add(lblSlippage, gbc_lblSlippage);
+		
+		lblNewLabel_1 = new JLabel("Percent Slippage");
+		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
+		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel_1.insets = new Insets(0, 0, 0, 5);
+		gbc_lblNewLabel_1.gridx = 0;
+		gbc_lblNewLabel_1.gridy = 7;
+		contentPane.add(lblNewLabel_1, gbc_lblNewLabel_1);
+		
+		lblPercentSlippage = new JLabel("");
+		GridBagConstraints gbc_lblPercentSlippage = new GridBagConstraints();
+		gbc_lblPercentSlippage.anchor = GridBagConstraints.WEST;
+		gbc_lblPercentSlippage.insets = new Insets(0, 0, 0, 5);
+		gbc_lblPercentSlippage.gridx = 1;
+		gbc_lblPercentSlippage.gridy = 7;
+		contentPane.add(lblPercentSlippage, gbc_lblPercentSlippage);
 		
 		scurvePanel.addMouseListener(new MouseAdapter() {
 
@@ -395,6 +473,32 @@ public class Main extends JFrame {
 			}
 			
 		});
+	}
+
+	protected void showStatus(double time, double percent) {
+		// Test if actual data is loaded
+		if (scurveDataActual.size() > 2) {
+			scurveActual = new SCurve();
+			for (SCurveNode node : this.scurveDataActual) {
+				scurveActual.addSCurveNode(node);
+			}
+			// Check if time given is later than time recorded in actual
+			if (time <= scurveDataActual.get(scurveDataActual.size()-1).getAbscissa()) {
+				double actual = Math.round(scurveActual.getOrdinate(time) * 1000.0) / 1000.0;
+				double slippage = Math.round((actual - percent) * 1000.0) / 1000.0;
+				double percentSlippage = Math.round(((actual - percent) / percent) * 1000.0) / 1000.0;
+				
+				lblActual.setText(String.valueOf(actual));
+				lblSlippage.setText(String.valueOf(slippage));
+				lblPercentSlippage.setText(String.valueOf(percentSlippage));
+			} else {
+				lblActual.setText("");
+				lblSlippage.setText("");
+				lblPercentSlippage.setText("");
+			}
+		} else {
+			
+		}
 	}
 
 	private void initObjects() {
