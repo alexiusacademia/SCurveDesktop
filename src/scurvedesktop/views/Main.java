@@ -72,6 +72,7 @@ public class Main extends JFrame {
 	private JLabel lblActual;
 	private JLabel lblSlippage;
 	private JLabel lblPercentSlippage;
+	private int selectedProjectedTime;
 
 	/**
 	 * Launch the application.
@@ -491,11 +492,16 @@ public class Main extends JFrame {
 				lblActual.setText(String.valueOf(actual));
 				lblSlippage.setText(String.valueOf(slippage));
 				lblPercentSlippage.setText(String.valueOf(percentSlippage));
+				
+				// Redraw the s-curve panel contents
+				scurvePanel.paint(scurvePanel.getGraphics());
+				
 			} else {
 				lblActual.setText("");
 				lblSlippage.setText("");
 				lblPercentSlippage.setText("");
 			}
+			
 		} else {
 			
 		}
@@ -608,6 +614,34 @@ public class Main extends JFrame {
 				
 				// Draw the curve segment
 				g2D.drawLine(x1, y1, x2, y2);
+			}
+			
+			// For drawing the marker of selected time
+			// Check if data for actual accomplishment is loaded
+			if (scurveDataActual.size() > 2) {
+				// Data for actual accomplishment is loaded (assumed loaded)
+				// Get the selected time
+				double projectedPercentage = 0;
+				double actualPercentage = 0;
+				
+				try {
+					double timeSelected = Double.parseDouble(tfTime.getText());
+					// Now get the projected and actual based on the time given
+					projectedPercentage = scurveProjected.getOrdinate(timeSelected);
+					actualPercentage = scurveActual.getOrdinate(timeSelected);
+					
+					// Now draw a small rectangle in the graph indicating projected
+					g2D.setColor(Color.BLACK);
+					g2D.setStroke(new BasicStroke(1));
+					g2D.drawRect((int)(timeSelected * factorWidth), 
+							(int)((panelHeight - projectedPercentage) * factorHeight), 
+							20, 20);
+					System.out.println(timeSelected);
+				} catch(NumberFormatException e) {
+					System.out.println("Error : " + e.getMessage());
+				} catch (NullPointerException e) {
+					System.out.println("Error : " + e.getMessage());
+				}
 			}
 		}
 	}
