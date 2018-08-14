@@ -72,7 +72,14 @@ public class Main extends JFrame {
 	private JLabel lblActual;
 	private JLabel lblSlippage;
 	private JLabel lblPercentSlippage;
-	private int selectedProjectedTime;
+	private double selectedProjectedTime, selectedProjected, selectedActual;
+	
+	/**
+	 * Rectangle marker indicator size
+	 */
+	private final int MARKER_RECTANGLE_WIDTH = 8;
+	private final int MARKER_RECTANGLE_HEIGHT = 8;
+	private final Color MARKER_COLOR = Color.GREEN;
 
 	/**
 	 * Launch the application.
@@ -493,6 +500,11 @@ public class Main extends JFrame {
 				lblSlippage.setText(String.valueOf(slippage));
 				lblPercentSlippage.setText(String.valueOf(percentSlippage));
 				
+				// Pass to global variables
+				this.selectedProjectedTime = time;
+				this.selectedProjected = percent;
+				this.selectedActual = actual;
+				
 				// Redraw the s-curve panel contents
 				scurvePanel.paint(scurvePanel.getGraphics());
 				
@@ -620,23 +632,49 @@ public class Main extends JFrame {
 			// Check if data for actual accomplishment is loaded
 			if (scurveDataActual.size() > 2) {
 				// Data for actual accomplishment is loaded (assumed loaded)
-				// Get the selected time
-				double projectedPercentage = 0;
-				double actualPercentage = 0;
 				
 				try {
-					double timeSelected = Double.parseDouble(tfTime.getText());
-					// Now get the projected and actual based on the time given
-					projectedPercentage = scurveProjected.getOrdinate(timeSelected);
-					actualPercentage = scurveActual.getOrdinate(timeSelected);
 					
 					// Now draw a small rectangle in the graph indicating projected
-					g2D.setColor(Color.BLACK);
+					g2D.setColor(MARKER_COLOR);
 					g2D.setStroke(new BasicStroke(1));
-					g2D.drawRect((int)(timeSelected * factorWidth), 
-							(int)((panelHeight - projectedPercentage) * factorHeight), 
-							20, 20);
-					System.out.println(timeSelected);
+					
+					// Draw marker for projected
+					g2D.drawRect((int)(selectedProjectedTime * factorWidth - MARKER_RECTANGLE_WIDTH/2), 
+							(int)(panelHeight - (selectedProjected + g2D.getFont().getSize()) * factorHeight - MARKER_RECTANGLE_HEIGHT/2), 
+							MARKER_RECTANGLE_WIDTH, MARKER_RECTANGLE_HEIGHT);
+					g2D.fillRect((int)(selectedProjectedTime * factorWidth - MARKER_RECTANGLE_WIDTH/2), 
+							(int)(panelHeight - (selectedProjected + g2D.getFont().getSize()) * factorHeight - MARKER_RECTANGLE_HEIGHT/2), 
+							MARKER_RECTANGLE_WIDTH, MARKER_RECTANGLE_HEIGHT);
+					
+					// Draw marker for actual
+					g2D.fillRect((int)(selectedProjectedTime * factorWidth - MARKER_RECTANGLE_WIDTH/2), 
+							(int)(panelHeight - (selectedActual + g2D.getFont().getSize()) * factorHeight - MARKER_RECTANGLE_HEIGHT/2), 
+							MARKER_RECTANGLE_WIDTH, MARKER_RECTANGLE_HEIGHT);
+					g2D.drawRect((int)(selectedProjectedTime * factorWidth - MARKER_RECTANGLE_WIDTH/2), 
+							(int)(panelHeight - (selectedActual + g2D.getFont().getSize()) * factorHeight - MARKER_RECTANGLE_HEIGHT/2), 
+							MARKER_RECTANGLE_WIDTH, MARKER_RECTANGLE_HEIGHT);
+					
+					// Draw rectangle in between markers
+					g2D.setStroke(new BasicStroke(MARKER_RECTANGLE_WIDTH));
+					g2D.drawLine((int)(selectedProjectedTime * factorWidth), 
+							(int)(panelHeight - (selectedProjected + g2D.getFont().getSize()) * factorHeight), 
+							(int)(selectedProjectedTime * factorWidth), 
+							(int)(panelHeight - (selectedActual + g2D.getFont().getSize()) * factorHeight));
+					
+					// Draw some information texts
+					g2D.setStroke(new BasicStroke(1));
+					g2D.setColor(Color.black);
+					
+					g2D.drawString("Projected", 20, 50);
+					g2D.drawString("= " + selectedProjected, 120, 50);
+					g2D.drawString("Actual", 20, 70);
+					g2D.drawString("= " + selectedActual, 120, 70);
+					g2D.drawString("Slippage", 20, 90);
+					g2D.drawString("= " + Math.round((selectedActual - selectedProjected)*1000)/1000, 120, 90);
+					g2D.drawString("Percent Slippage", 20, 110);
+					g2D.drawString("= " + Math.round(((selectedActual - selectedProjected)/selectedProjected*100)*1000)/1000, 120, 110);
+					
 				} catch(NumberFormatException e) {
 					System.out.println("Error : " + e.getMessage());
 				} catch (NullPointerException e) {
