@@ -80,6 +80,7 @@ public class Main extends JFrame {
 	private final int MARKER_RECTANGLE_WIDTH = 8;
 	private final int MARKER_RECTANGLE_HEIGHT = 8;
 	private final Color MARKER_COLOR = Color.GREEN;
+	private JLabel lblDeveloperAlexiusacademiagmailcom;
 
 	/**
 	 * Launch the application.
@@ -470,6 +471,14 @@ public class Main extends JFrame {
 		gbc_lblPercentSlippage.gridx = 1;
 		gbc_lblPercentSlippage.gridy = 7;
 		contentPane.add(lblPercentSlippage, gbc_lblPercentSlippage);
+		
+		lblDeveloperAlexiusacademiagmailcom = new JLabel("Developer:  alexius.academia@gmail.com");
+		lblDeveloperAlexiusacademiagmailcom.setFont(new Font("Arial", Font.ITALIC, 10));
+		GridBagConstraints gbc_lblDeveloperAlexiusacademiagmailcom = new GridBagConstraints();
+		gbc_lblDeveloperAlexiusacademiagmailcom.anchor = GridBagConstraints.EAST;
+		gbc_lblDeveloperAlexiusacademiagmailcom.gridx = 2;
+		gbc_lblDeveloperAlexiusacademiagmailcom.gridy = 7;
+		contentPane.add(lblDeveloperAlexiusacademiagmailcom, gbc_lblDeveloperAlexiusacademiagmailcom);
 		
 		scurvePanel.addMouseListener(new MouseAdapter() {
 
