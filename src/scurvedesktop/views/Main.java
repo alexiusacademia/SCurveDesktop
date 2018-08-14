@@ -81,6 +81,8 @@ public class Main extends JFrame {
 	private final int MARKER_RECTANGLE_HEIGHT = 8;
 	private final Color MARKER_COLOR = Color.GREEN;
 	private JLabel lblDeveloperAlexiusacademiagmailcom;
+	private JLabel lblNewLabel_2;
+	private JLabel lblNewLabel_3;
 
 	/**
 	 * Launch the application.
@@ -279,9 +281,9 @@ public class Main extends JFrame {
 		
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[]{0, 0, 0, 0};
-		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_contentPane.columnWeights = new double[]{1.0, 1.0, 1.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		
 		contentPane.setLayout(gbl_contentPane);
 		
@@ -342,6 +344,7 @@ public class Main extends JFrame {
 		gbc_pnlSCurveLabelHorizontal.fill = GridBagConstraints.BOTH;
 		gbc_pnlSCurveLabelHorizontal.gridx = 2;
 		gbc_pnlSCurveLabelHorizontal.gridy = 1;
+		gbc_pnlSCurveLabelHorizontal.gridheight = 6;
 		contentPane.add(scurvePanel, gbc_pnlSCurveLabelHorizontal);
 		
 		lblTime = new JLabel("Time");
@@ -459,7 +462,7 @@ public class Main extends JFrame {
 		lblNewLabel_1 = new JLabel("Percent Slippage");
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_1.insets = new Insets(0, 0, 0, 5);
+		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_1.gridx = 0;
 		gbc_lblNewLabel_1.gridy = 7;
 		contentPane.add(lblNewLabel_1, gbc_lblNewLabel_1);
@@ -467,7 +470,7 @@ public class Main extends JFrame {
 		lblPercentSlippage = new JLabel("");
 		GridBagConstraints gbc_lblPercentSlippage = new GridBagConstraints();
 		gbc_lblPercentSlippage.anchor = GridBagConstraints.WEST;
-		gbc_lblPercentSlippage.insets = new Insets(0, 0, 0, 5);
+		gbc_lblPercentSlippage.insets = new Insets(0, 0, 5, 5);
 		gbc_lblPercentSlippage.gridx = 1;
 		gbc_lblPercentSlippage.gridy = 7;
 		contentPane.add(lblPercentSlippage, gbc_lblPercentSlippage);
@@ -475,10 +478,28 @@ public class Main extends JFrame {
 		lblDeveloperAlexiusacademiagmailcom = new JLabel("Developer:  alexius.academia@gmail.com");
 		lblDeveloperAlexiusacademiagmailcom.setFont(new Font("Arial", Font.ITALIC, 10));
 		GridBagConstraints gbc_lblDeveloperAlexiusacademiagmailcom = new GridBagConstraints();
+		gbc_lblDeveloperAlexiusacademiagmailcom.insets = new Insets(0, 0, 5, 0);
 		gbc_lblDeveloperAlexiusacademiagmailcom.anchor = GridBagConstraints.EAST;
 		gbc_lblDeveloperAlexiusacademiagmailcom.gridx = 2;
 		gbc_lblDeveloperAlexiusacademiagmailcom.gridy = 7;
 		contentPane.add(lblDeveloperAlexiusacademiagmailcom, gbc_lblDeveloperAlexiusacademiagmailcom);
+		
+		lblNewLabel_2 = new JLabel("https://github.com/alexiusacademia/SCurveDesktop");
+		lblNewLabel_2.setFont(new Font("Arial", Font.ITALIC, 10));
+		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
+		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 0);
+		gbc_lblNewLabel_2.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel_2.gridx = 2;
+		gbc_lblNewLabel_2.gridy = 8;
+		contentPane.add(lblNewLabel_2, gbc_lblNewLabel_2);
+		
+		lblNewLabel_3 = new JLabel("https://alexiusacademia.com");
+		lblNewLabel_3.setFont(new Font("Arial", Font.ITALIC, 10));
+		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
+		gbc_lblNewLabel_3.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel_3.gridx = 2;
+		gbc_lblNewLabel_3.gridy = 9;
+		contentPane.add(lblNewLabel_3, gbc_lblNewLabel_3);
 		
 		scurvePanel.addMouseListener(new MouseAdapter() {
 
