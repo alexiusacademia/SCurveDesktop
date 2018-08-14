@@ -7,3 +7,7 @@ The program requires java runtime environment (JRE) installed in order to run. J
 ## Download
 
 You can find the latest binary [here](https://github.com/alexiusacademia/SCurveDesktop/releases)
+
+## Screenshots
+
+![screenshot](https://github.com/alexiusacademia/SCurveDesktop/raw/master/screenshot.JPG)
