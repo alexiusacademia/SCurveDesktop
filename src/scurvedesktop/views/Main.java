@@ -28,6 +28,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.ImageIcon;
 
 import javax.swing.JFileChooser;
@@ -88,6 +90,23 @@ public class Main extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		/**
+		 * Adjusting look and feel
+		 */
+		try {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (UnsupportedLookAndFeelException e) {
+			
+		}
+		/**
+		 * End for adjusting look and feel
+		 */
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
