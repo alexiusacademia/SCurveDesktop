@@ -18,9 +18,11 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.prefs.Preferences;
 import java.awt.Font;
 import javax.swing.JTable;
 import javax.swing.JMenuBar;
@@ -57,10 +59,10 @@ public class Main extends JFrame {
 	private JTable tblProjected;
 	private JTable tblActual;
 	private JMenuBar menuBar;
-	private JMenu mnProject;
-	private JMenuItem mntmProjectedData;
-	private JMenuItem mntmActualData;
-	private DrawingPanel scurvePanel;
+	private JMenu mnProject, mnSettings;
+	private JMenuItem mntmProjectedData, mntmActualData;
+	private JMenuItem mntmSettingsColor;
+	public DrawingPanel scurvePanel;
 	private JLabel lblProjectedTitle;
 	private JLabel lblActualTitle;
 	private JLabel lblTime;
@@ -75,6 +77,16 @@ public class Main extends JFrame {
 	private JLabel lblSlippage;
 	private JLabel lblPercentSlippage;
 	private double selectedProjectedTime, selectedProjected, selectedActual;
+	
+	/**
+	 * Preferences
+	 */
+	private Preferences prefs;
+	private String prefNameColorProjected = "PREF_COLOR_PROJECTED";
+	private String prefNameColorActual = "PREF_COLOR_ACTUAL";
+	/**
+	 * End of Preferences
+	 */
 	
 	/**
 	 * Rectangle marker indicator size
@@ -137,6 +149,9 @@ public class Main extends JFrame {
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
+		/**
+		 * Menu Project
+		 */
 		mnProject = new JMenu("Project");
 		mnProject.setHorizontalAlignment(SwingConstants.TRAILING);
 		mnProject.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -292,6 +307,32 @@ public class Main extends JFrame {
 		mntmActualData.setFont(new Font("Arial", Font.PLAIN, 12));
 		mntmActualData.setHorizontalAlignment(SwingConstants.LEFT);
 		mnProject.add(mntmActualData);
+		/**
+		 * End of Menu Project
+		 */
+		
+		/**
+		 * Menu Settings
+		 */
+		mnSettings = new JMenu("Settings");
+		mnSettings.setHorizontalAlignment(SwingConstants.TRAILING);
+		mnSettings.setFont(new Font("Arial", Font.PLAIN, 12));
+		menuBar.add(mnSettings);
+		
+		mntmSettingsColor = new JMenuItem("Color Settings");
+		mntmSettingsColor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// Open the color settings dialog
+				openColorSettingsDialog();
+			}
+		});
+		
+		
+		mnSettings.add(mntmSettingsColor);
+		/**
+		 * End of Menu Settings
+		 */
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -531,6 +572,16 @@ public class Main extends JFrame {
 			
 		});
 	}
+	
+	private void openColorSettingsDialog() {
+		ColorSettings colorSettings = new ColorSettings(this);
+		colorSettings.setVisible(true);
+		colorSettings.addWindowListener(new WindowAdapter() {
+			public void windowClosed(WindowEvent e) {
+				scurvePanel.paint(scurvePanel.getGraphics());
+			}
+		});
+	}
 
 	protected void showStatus(double time, double percent) {
 		// Test if actual data is loaded
@@ -569,6 +620,8 @@ public class Main extends JFrame {
 	}
 
 	private void initObjects() {
+		prefs = Preferences.userRoot().node(this.getClass().getName());
+		
 		scurveProjected = new SCurve();
 		scurveActual = new SCurve();
 		
@@ -634,7 +687,7 @@ public class Main extends JFrame {
 				y2 = (int) (panelHeight - scurveDataProjected.get(i).getOrdinate() * factorHeight - g2D.getFont().getSize() * factorHeight);
 				
 				// Sets the stroke
-				g2D.setColor(Color.RED);
+				g2D.setColor(new Color(prefs.getInt(prefNameColorProjected, -16777216)));
 				g2D.setStroke(new BasicStroke(3));
 				
 				// Draw the curve segment
