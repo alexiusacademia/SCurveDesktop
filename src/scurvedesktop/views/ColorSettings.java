@@ -9,6 +9,8 @@ import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.event.ActionEvent;
@@ -30,14 +32,32 @@ public class ColorSettings extends JDialog implements ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private Preferences prefs;
-	private String prefNameColorProjected = "PREF_COLOR_PROJECTED";
-	private String prefNameColorActual = "PREF_COLOR_ACTUAL";
+	private final String prefNameColorProjected = "PREF_COLOR_PROJECTED";
+	private final String prefNameColorActual = "PREF_COLOR_ACTUAL";
 
 	/**
 	 * Create the dialog.
 	 */
 	public ColorSettings(JFrame parent) {
 		super(parent);
+		
+		/**
+		 * Adjusting look and feel
+		 */
+		try {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (UnsupportedLookAndFeelException e) {
+			
+		}
+		/**
+		 * End for adjusting look and feel
+		 */
+		
 		prefs = Preferences.userRoot().node(this.getParent().getClass().getName());
 		setFont(new Font("Arial", Font.PLAIN, 12));
 		setTitle("Color Settings");
@@ -99,7 +119,7 @@ public class ColorSettings extends JDialog implements ActionListener {
 			});
 			btnProjectedLineColor.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 			// Get the color for projected line
-			Color c = new Color(prefs.getInt(prefNameColorProjected, -16777216));
+			Color c = new Color(prefs.getInt(prefNameColorProjected, (Color.RED).getRGB()));
 			btnProjectedLineColor.setBackground(c);
 			btnProjectedLineColor.setOpaque(true);
 			GridBagConstraints gbc_btnProjectedLineColor = new GridBagConstraints();
@@ -127,10 +147,22 @@ public class ColorSettings extends JDialog implements ActionListener {
 				@Override
 				public void mouseReleased(MouseEvent e) {
 					btnActualLineColor.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+					
+					// Open the color chooser dialog
+					Color color = JColorChooser.showDialog(null, "Select color", btnActualLineColor.getBackground());
+					
+					// Set the button color to the color selected
+					btnActualLineColor.setBackground(color);
+					
+					// Pass in the color selected to preferences
+					int c = color.getRGB();		// Convert the color to RGB (int)
+					prefs.putInt(prefNameColorActual, c);
 				}
 			});
 			btnActualLineColor.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-			btnActualLineColor.setBackground(Color.BLUE);
+			// Get the color for projected line
+			Color c = new Color(prefs.getInt(prefNameColorActual, (Color.BLUE).getRGB()));
+			btnActualLineColor.setBackground(c);
 			btnActualLineColor.setOpaque(true);
 			GridBagConstraints gbc_btnActualLineColor = new GridBagConstraints();
 			gbc_btnActualLineColor.insets = new Insets(0, 0, 5, 0);

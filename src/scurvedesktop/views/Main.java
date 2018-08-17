@@ -82,8 +82,8 @@ public class Main extends JFrame {
 	 * Preferences
 	 */
 	private Preferences prefs;
-	private String prefNameColorProjected = "PREF_COLOR_PROJECTED";
-	private String prefNameColorActual = "PREF_COLOR_ACTUAL";
+	private final String prefNameColorProjected = "PREF_COLOR_PROJECTED";
+	private final String prefNameColorActual = "PREF_COLOR_ACTUAL";
 	/**
 	 * End of Preferences
 	 */
@@ -687,7 +687,7 @@ public class Main extends JFrame {
 				y2 = (int) (panelHeight - scurveDataProjected.get(i).getOrdinate() * factorHeight - g2D.getFont().getSize() * factorHeight);
 				
 				// Sets the stroke
-				g2D.setColor(new Color(prefs.getInt(prefNameColorProjected, -16777216)));
+				g2D.setColor(new Color(prefs.getInt(prefNameColorProjected, (Color.RED).getRGB())));
 				g2D.setStroke(new BasicStroke(3));
 				
 				// Draw the curve segment
@@ -723,7 +723,7 @@ public class Main extends JFrame {
 				y2 = (int) (panelHeight - scurveDataActual.get(i).getOrdinate() * factorHeight - g2D.getFont().getSize() * factorHeight);
 				
 				// Sets the stroke
-				g2D.setColor(Color.BLUE);
+				g2D.setColor(new Color(prefs.getInt(prefNameColorActual, (Color.RED).getRGB())));
 				g2D.setStroke(new BasicStroke(3));
 				
 				// Draw the curve segment
