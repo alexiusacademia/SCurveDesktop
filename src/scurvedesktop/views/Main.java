@@ -2,6 +2,7 @@ package scurvedesktop.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -49,6 +50,9 @@ import java.awt.event.KeyEvent;
 
 import main.java.SCurve;
 import main.java.SCurveNode;
+import scurvedesktop.views.dialogs.AboutDialog;
+import scurvedesktop.views.dialogs.ColorSettingsDialog;
+import javax.swing.JSplitPane;
 
 @SuppressWarnings("serial")
 public class Main extends JFrame {
@@ -58,10 +62,6 @@ public class Main extends JFrame {
 	private List<SCurveNode> scurveDataActual;
 	private JTable tblProjected;
 	private JTable tblActual;
-	private JMenuBar menuBar;
-	private JMenu mnProject, mnSettings;
-	private JMenuItem mntmProjectedData, mntmActualData;
-	private JMenuItem mntmSettingsColor;
 	public DrawingPanel scurvePanel;
 	private JLabel lblProjectedTitle;
 	private JLabel lblActualTitle;
@@ -78,25 +78,37 @@ public class Main extends JFrame {
 	private JLabel lblPercentSlippage;
 	private double selectedProjectedTime, selectedProjected, selectedActual;
 	
-	/**
+	/** =================================================
+	 * Menu bar and menus
+	 * ================================================ */
+	private JMenuBar menuBar;
+	private JMenu mnProject, mnSettings, mnHelp;
+	private JMenuItem mntmProjectedData, mntmActualData;
+	private JMenuItem mntmSettingsColor;
+	private JMenuItem mntmAbout, mntmHelp;
+	/** =================================================
+	 * End of menu bar and menus
+	 * ================================================ */
+	
+	/** =================================================
 	 * Preferences
-	 */
+	 * ================================================ */
 	private Preferences prefs;
 	private final String prefNameColorProjected = "PREF_COLOR_PROJECTED";
 	private final String prefNameColorActual = "PREF_COLOR_ACTUAL";
-	/**
+	/** =================================================
 	 * End of Preferences
-	 */
+	 * ================================================ */
 	
-	/**
+	/** =================================================
 	 * Rectangle marker indicator size
-	 */
+	 * ================================================ */
 	private final int MARKER_RECTANGLE_WIDTH = 8;
 	private final int MARKER_RECTANGLE_HEIGHT = 8;
 	private final Color MARKER_COLOR = Color.GREEN;
-	private JLabel lblDeveloperAlexiusacademiagmailcom;
-	private JLabel lblNewLabel_2;
-	private JLabel lblNewLabel_3;
+	private JMenuItem mntmAbout_1;
+	private JMenuItem mntmTutorial;
+	private JSplitPane splitPane;
 
 	/**
 	 * Launch the application.
@@ -320,6 +332,8 @@ public class Main extends JFrame {
 		menuBar.add(mnSettings);
 		
 		mntmSettingsColor = new JMenuItem("Color Settings");
+		mntmSettingsColor.setHorizontalAlignment(SwingConstants.LEFT);
+		mntmSettingsColor.setFont(new Font("Arial", Font.PLAIN, 12));
 		mntmSettingsColor.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
@@ -334,15 +348,42 @@ public class Main extends JFrame {
 		 * End of Menu Settings
 		 */
 		
+		/**
+		 * Menu Help
+		 */
+		mnHelp = new JMenu("Help");
+		mnHelp.setHorizontalAlignment(SwingConstants.TRAILING);
+		mnHelp.setFont(new Font("Arial", Font.PLAIN, 12));
+		menuBar.add(mnHelp);
+		
+		mntmTutorial = new JMenuItem("Tutorial");
+		mntmTutorial.setHorizontalAlignment(SwingConstants.LEFT);
+		mntmTutorial.setFont(new Font("Arial", Font.PLAIN, 12));
+		mnHelp.add(mntmTutorial);
+		
+		mntmAbout_1 = new JMenuItem("About");
+		mntmAbout_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				openAboutDialog();
+			}
+		});
+		mntmAbout_1.setHorizontalAlignment(SwingConstants.LEFT);
+		mntmAbout_1.setFont(new Font("Arial", Font.PLAIN, 12));
+		mnHelp.add(mntmAbout_1);
+		/**
+		 * End of Menu Help
+		 */
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
 		setContentPane(contentPane);
 		
 		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[]{0, 0, 0, 0};
+		gbl_contentPane.columnWidths = new int[]{0, 0, 0, 0, 0};
 		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_contentPane.columnWeights = new double[]{1.0, 1.0, 1.0, Double.MIN_VALUE};
+		gbl_contentPane.columnWeights = new double[]{1.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
 		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		
 		contentPane.setLayout(gbl_contentPane);
@@ -359,7 +400,7 @@ public class Main extends JFrame {
 		JLabel lblScurve = new JLabel("SCurve");
 		lblScurve.setFont(new Font("Lucida Grande", Font.BOLD, 15));
 		GridBagConstraints gbc_lblScurve = new GridBagConstraints();
-		gbc_lblScurve.insets = new Insets(0, 0, 5, 0);
+		gbc_lblScurve.insets = new Insets(0, 0, 5, 5);
 		gbc_lblScurve.gridx = 2;
 		gbc_lblScurve.gridy = 0;
 		contentPane.add(lblScurve, gbc_lblScurve);
@@ -371,6 +412,29 @@ public class Main extends JFrame {
 		gbc_lblProjectedTitle.gridy = 1;
 		contentPane.add(lblProjectedTitle, gbc_lblProjectedTitle);
 		
+		Dimension tblDimension = new Dimension();
+		tblDimension.width = 200;
+		tblDimension.height = 300;
+		
+		// tblProjected = new JTable(projectedTableData, projectedTableHeaders);
+		tblProjected = new JTable();
+		/*GridBagConstraints gbc_tblProjected = new GridBagConstraints();
+		gbc_tblProjected.weightx = 2.0;
+		gbc_tblProjected.insets = new Insets(0, 0, 5, 5);
+		gbc_tblProjected.fill = GridBagConstraints.BOTH;
+		gbc_tblProjected.gridx = 0;
+		gbc_tblProjected.gridy = 2;
+		contentPane.add(new JScrollPane(tblProjected), gbc_tblProjected);*/
+		
+		tblActual = new JTable();
+		/*GridBagConstraints gbc_tblActual = new GridBagConstraints();
+		gbc_tblActual.weightx = 2.0;
+		gbc_tblActual.insets = new Insets(0, 0, 5, 5);
+		gbc_tblActual.fill = GridBagConstraints.BOTH;
+		gbc_tblActual.gridx = 2;
+		gbc_tblActual.gridy = 2;
+		contentPane.add(new JScrollPane(tblActual), gbc_tblActual);*/
+		
 		lblActualTitle = new JLabel("Actual");
 		GridBagConstraints gbc_lblActualTitle = new GridBagConstraints();
 		gbc_lblActualTitle.insets = new Insets(0, 0, 5, 5);
@@ -378,24 +442,15 @@ public class Main extends JFrame {
 		gbc_lblActualTitle.gridy = 1;
 		contentPane.add(lblActualTitle, gbc_lblActualTitle);
 		
-		// tblProjected = new JTable(projectedTableData, projectedTableHeaders);
-		tblProjected = new JTable();
-		GridBagConstraints gbc_tblProjected = new GridBagConstraints();
-		gbc_tblProjected.weightx = 2.0;
-		gbc_tblProjected.insets = new Insets(0, 0, 5, 5);
-		gbc_tblProjected.fill = GridBagConstraints.BOTH;
-		gbc_tblProjected.gridx = 0;
-		gbc_tblProjected.gridy = 2;
-		contentPane.add(new JScrollPane(tblProjected), gbc_tblProjected);
-		
-		tblActual = new JTable();
-		GridBagConstraints gbc_tblActual = new GridBagConstraints();
-		gbc_tblActual.weightx = 2.0;
-		gbc_tblActual.insets = new Insets(0, 0, 5, 5);
-		gbc_tblActual.fill = GridBagConstraints.BOTH;
-		gbc_tblActual.gridx = 1;
-		gbc_tblActual.gridy = 2;
-		contentPane.add(new JScrollPane(tblActual), gbc_tblActual);
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				new JScrollPane(tblProjected), new JScrollPane(tblActual));
+		GridBagConstraints gbc_splitPane = new GridBagConstraints();
+		gbc_splitPane.gridwidth = 2;
+		gbc_splitPane.insets = new Insets(0, 0, 5, 5);
+		gbc_splitPane.fill = GridBagConstraints.BOTH;
+		gbc_splitPane.gridx = 0;
+		gbc_splitPane.gridy = 2;
+		contentPane.add(splitPane, gbc_splitPane);
 		
 		scurvePanel = new DrawingPanel();
 		GridBagConstraints gbc_pnlSCurveLabelHorizontal = new GridBagConstraints();
@@ -413,13 +468,6 @@ public class Main extends JFrame {
 		gbc_lblTime.gridx = 0;
 		gbc_lblTime.gridy = 3;
 		contentPane.add(lblTime, gbc_lblTime);
-		
-		lblProjected_1 = new JLabel("Projected");
-		GridBagConstraints gbc_lblProjected_1 = new GridBagConstraints();
-		gbc_lblProjected_1.insets = new Insets(0, 0, 5, 5);
-		gbc_lblProjected_1.gridx = 1;
-		gbc_lblProjected_1.gridy = 3;
-		contentPane.add(lblProjected_1, gbc_lblProjected_1);
 		
 		tfTime = new JTextField();
 		tfTime.addKeyListener(new KeyAdapter() {
@@ -447,6 +495,13 @@ public class Main extends JFrame {
 				}
 			}
 		});
+		
+		lblProjected_1 = new JLabel("Projected");
+		GridBagConstraints gbc_lblProjected_1 = new GridBagConstraints();
+		gbc_lblProjected_1.insets = new Insets(0, 0, 5, 5);
+		gbc_lblProjected_1.gridx = 1;
+		gbc_lblProjected_1.gridy = 3;
+		contentPane.add(lblProjected_1, gbc_lblProjected_1);
 		GridBagConstraints gbc_tfTime = new GridBagConstraints();
 		gbc_tfTime.insets = new Insets(0, 0, 5, 5);
 		gbc_tfTime.fill = GridBagConstraints.HORIZONTAL;
@@ -535,32 +590,6 @@ public class Main extends JFrame {
 		gbc_lblPercentSlippage.gridy = 7;
 		contentPane.add(lblPercentSlippage, gbc_lblPercentSlippage);
 		
-		lblDeveloperAlexiusacademiagmailcom = new JLabel("Developer:  alexius.academia@gmail.com");
-		lblDeveloperAlexiusacademiagmailcom.setFont(new Font("Arial", Font.ITALIC, 10));
-		GridBagConstraints gbc_lblDeveloperAlexiusacademiagmailcom = new GridBagConstraints();
-		gbc_lblDeveloperAlexiusacademiagmailcom.insets = new Insets(0, 0, 5, 0);
-		gbc_lblDeveloperAlexiusacademiagmailcom.anchor = GridBagConstraints.EAST;
-		gbc_lblDeveloperAlexiusacademiagmailcom.gridx = 2;
-		gbc_lblDeveloperAlexiusacademiagmailcom.gridy = 7;
-		contentPane.add(lblDeveloperAlexiusacademiagmailcom, gbc_lblDeveloperAlexiusacademiagmailcom);
-		
-		lblNewLabel_2 = new JLabel("https://github.com/alexiusacademia/SCurveDesktop");
-		lblNewLabel_2.setFont(new Font("Arial", Font.ITALIC, 10));
-		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
-		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNewLabel_2.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_2.gridx = 2;
-		gbc_lblNewLabel_2.gridy = 8;
-		contentPane.add(lblNewLabel_2, gbc_lblNewLabel_2);
-		
-		lblNewLabel_3 = new JLabel("https://alexiusacademia.com");
-		lblNewLabel_3.setFont(new Font("Arial", Font.ITALIC, 10));
-		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
-		gbc_lblNewLabel_3.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_3.gridx = 2;
-		gbc_lblNewLabel_3.gridy = 9;
-		contentPane.add(lblNewLabel_3, gbc_lblNewLabel_3);
-		
 		scurvePanel.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -573,8 +602,13 @@ public class Main extends JFrame {
 		});
 	}
 	
+	protected void openAboutDialog() {
+		AboutDialog aboutDlg = new AboutDialog(this);
+		aboutDlg.setVisible(true);
+	}
+
 	private void openColorSettingsDialog() {
-		ColorSettings colorSettings = new ColorSettings(this);
+		ColorSettingsDialog colorSettings = new ColorSettingsDialog(this);
 		colorSettings.setVisible(true);
 		colorSettings.addWindowListener(new WindowAdapter() {
 			public void windowClosed(WindowEvent e) {
@@ -637,6 +671,9 @@ public class Main extends JFrame {
 		scurveDataActual.add(new SCurveNode(0, 0));
 	}
 	
+	/**
+	 * Re-populate the scurveProjected object's nodes
+	 */
 	private void updateProjectedNodes() {
 		scurveProjected = new SCurve();
 		for (SCurveNode node : this.scurveDataProjected) {
@@ -644,6 +681,11 @@ public class Main extends JFrame {
 		}
 	}
 	
+	/**
+	 * A class for the s-curve drawing panel
+	 * @author syncster31
+	 *
+	 */
 	private class DrawingPanel extends JPanel{
 		public DrawingPanel(){
 			

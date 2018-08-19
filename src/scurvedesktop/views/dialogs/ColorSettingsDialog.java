@@ -1,4 +1,4 @@
-package scurvedesktop.views;
+package scurvedesktop.views.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -27,7 +27,7 @@ import java.awt.Color;
 import javax.swing.border.BevelBorder;
 
 @SuppressWarnings("serial")
-public class ColorSettings extends JDialog implements ActionListener {
+public class ColorSettingsDialog extends JDialog implements ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private Preferences prefs;
@@ -37,7 +37,7 @@ public class ColorSettings extends JDialog implements ActionListener {
 	/**
 	 * Create the dialog.
 	 */
-	public ColorSettings(JFrame parent) {
+	public ColorSettingsDialog(JFrame parent) {
 		super(parent);
 		
 		/**
