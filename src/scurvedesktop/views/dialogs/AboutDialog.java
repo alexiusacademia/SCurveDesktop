@@ -27,6 +27,7 @@ public class AboutDialog extends JDialog implements ActionListener {
 	 */
 	public AboutDialog(JFrame parent) {
 		super(parent);
+		setResizable(false);
 		
 		setTitle("About");
 		int width = 300;
@@ -41,9 +42,9 @@ public class AboutDialog extends JDialog implements ActionListener {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		GridBagLayout gbl_contentPanel = new GridBagLayout();
 		gbl_contentPanel.columnWidths = new int[]{0, 0, 0};
-		gbl_contentPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0};
+		gbl_contentPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
 		gbl_contentPanel.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
-		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		contentPanel.setLayout(gbl_contentPanel);
 		{
 			JLabel lblScurveDesktop = new JLabel("SCurve Desktop");
@@ -53,7 +54,7 @@ public class AboutDialog extends JDialog implements ActionListener {
 			GridBagConstraints gbc_lblScurveDesktop = new GridBagConstraints();
 			gbc_lblScurveDesktop.fill = GridBagConstraints.HORIZONTAL;
 			gbc_lblScurveDesktop.gridwidth = 2;
-			gbc_lblScurveDesktop.insets = new Insets(0, 0, 5, 5);
+			gbc_lblScurveDesktop.insets = new Insets(0, 0, 5, 0);
 			gbc_lblScurveDesktop.gridx = 0;
 			gbc_lblScurveDesktop.gridy = 0;
 			contentPanel.add(lblScurveDesktop, gbc_lblScurveDesktop);
@@ -62,38 +63,43 @@ public class AboutDialog extends JDialog implements ActionListener {
 			JLabel lblV = new JLabel("v0.1.1");
 			GridBagConstraints gbc_lblV = new GridBagConstraints();
 			gbc_lblV.gridwidth = 2;
-			gbc_lblV.insets = new Insets(0, 0, 5, 5);
+			gbc_lblV.insets = new Insets(0, 0, 5, 0);
 			gbc_lblV.gridx = 0;
 			gbc_lblV.gridy = 1;
 			contentPanel.add(lblV, gbc_lblV);
 		}
 		{
 			JLabel lblSyncsoftSoftwareSolutions = new JLabel("Syncsoft Software Solutions");
+			lblSyncsoftSoftwareSolutions.setHorizontalAlignment(SwingConstants.CENTER);
 			lblSyncsoftSoftwareSolutions.setFont(new Font("Marion", Font.BOLD, 17));
 			GridBagConstraints gbc_lblSyncsoftSoftwareSolutions = new GridBagConstraints();
 			gbc_lblSyncsoftSoftwareSolutions.fill = GridBagConstraints.HORIZONTAL;
+			gbc_lblSyncsoftSoftwareSolutions.gridwidth = 2;
 			gbc_lblSyncsoftSoftwareSolutions.insets = new Insets(0, 0, 5, 0);
-			gbc_lblSyncsoftSoftwareSolutions.gridx = 1;
-			gbc_lblSyncsoftSoftwareSolutions.gridy = 2;
+			gbc_lblSyncsoftSoftwareSolutions.gridx = 0;
+			gbc_lblSyncsoftSoftwareSolutions.gridy = 3;
 			contentPanel.add(lblSyncsoftSoftwareSolutions, gbc_lblSyncsoftSoftwareSolutions);
 		}
 		{
 			JLabel lblAlexiusacademiagmailcom = new JLabel("alexius.academia@gmail.com");
+			lblAlexiusacademiagmailcom.setHorizontalAlignment(SwingConstants.CENTER);
 			GridBagConstraints gbc_lblAlexiusacademiagmailcom = new GridBagConstraints();
-			gbc_lblAlexiusacademiagmailcom.anchor = GridBagConstraints.WEST;
+			gbc_lblAlexiusacademiagmailcom.fill = GridBagConstraints.HORIZONTAL;
+			gbc_lblAlexiusacademiagmailcom.gridwidth = 2;
 			gbc_lblAlexiusacademiagmailcom.insets = new Insets(0, 0, 5, 0);
-			gbc_lblAlexiusacademiagmailcom.gridx = 1;
-			gbc_lblAlexiusacademiagmailcom.gridy = 3;
+			gbc_lblAlexiusacademiagmailcom.gridx = 0;
+			gbc_lblAlexiusacademiagmailcom.gridy = 4;
 			contentPanel.add(lblAlexiusacademiagmailcom, gbc_lblAlexiusacademiagmailcom);
 		}
 		{
 			JLabel lblAllRightsReserved = new JLabel("All Rights Reserved (c) 2018");
+			lblAllRightsReserved.setHorizontalAlignment(SwingConstants.CENTER);
 			lblAllRightsReserved.setFont(new Font("Lucida Grande", Font.ITALIC, 10));
 			GridBagConstraints gbc_lblAllRightsReserved = new GridBagConstraints();
-			gbc_lblAllRightsReserved.gridwidth = 2;
-			gbc_lblAllRightsReserved.insets = new Insets(0, 0, 0, 5);
+			gbc_lblAllRightsReserved.fill = GridBagConstraints.HORIZONTAL;
+			gbc_lblAllRightsReserved.gridwidth = 3;
 			gbc_lblAllRightsReserved.gridx = 0;
-			gbc_lblAllRightsReserved.gridy = 4;
+			gbc_lblAllRightsReserved.gridy = 5;
 			contentPanel.add(lblAllRightsReserved, gbc_lblAllRightsReserved);
 		}
 		{

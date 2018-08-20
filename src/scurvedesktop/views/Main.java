@@ -359,7 +359,7 @@ public class Main extends JFrame {
 		mntmTutorial = new JMenuItem("Tutorial");
 		mntmTutorial.setHorizontalAlignment(SwingConstants.LEFT);
 		mntmTutorial.setFont(new Font("Arial", Font.PLAIN, 12));
-		mnHelp.add(mntmTutorial);
+		// mnHelp.add(mntmTutorial);
 		
 		mntmAbout_1 = new JMenuItem("About");
 		mntmAbout_1.addMouseListener(new MouseAdapter() {
@@ -444,12 +444,14 @@ public class Main extends JFrame {
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				new JScrollPane(tblProjected), new JScrollPane(tblActual));
+		splitPane.setResizeWeight(0.5);
 		GridBagConstraints gbc_splitPane = new GridBagConstraints();
 		gbc_splitPane.gridwidth = 2;
 		gbc_splitPane.insets = new Insets(0, 0, 5, 5);
 		gbc_splitPane.fill = GridBagConstraints.BOTH;
 		gbc_splitPane.gridx = 0;
 		gbc_splitPane.gridy = 2;
+		gbc_splitPane.weightx = 3;
 		contentPane.add(splitPane, gbc_splitPane);
 		
 		scurvePanel = new DrawingPanel();
